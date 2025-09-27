@@ -1,0 +1,148 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f0f2f5;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.header {
+  background-color: #007BFF;
+  color: rgba(255, 255, 255, 0.553);
+  padding: 20px 10px;
+}
+
+.logo {
+  width: 100px;
+  border-radius: 8px;
+  border: 3px solid white;
+}
+
+#loginPage {
+  background: white;
+  padding: 20px;
+  max-width: 400px;
+  margin: 40px auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+input, select {
+  padding: 10px;
+  margin: 10px auto;
+  width: 90%;
+  max-width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: block;
+}
+
+button {
+  background: linear-gradient(45deg, #007BFF, #0056b3);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px auto;
+  display: block;
+}
+
+button:hover {
+  background: linear-gradient(45deg, #0056b3, #003f7f);
+}
+
+#resetLink {
+  color: #007BFF;
+  text-decoration: none;
+  font-size: 0.9em;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+#resetLink:hover {
+  text-decoration: underline;
+}
+
+table {
+  width: 95%;
+  margin: 20px auto;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 0 8px rgba(0,0,0,0.05);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+th {
+  background: #007BFF;
+  color: white;
+  text-transform: uppercase;
+}
+
+hr {
+  margin: 40px 0;
+  border: none;
+  border-top: 2px dashed #ccc;
+}
+
+h3 {
+  margin-top: 30px;
+}
+
+p {
+  font-size: 1.1em;
+}
+
+@media (max-width: 768px) {
+  table {
+    font-size: 13px;
+  }
+
+  .logo {
+    width: 80px;
+  }
+
+  input, select, button {
+    width: 90% !important;
+  }
+}
+
+@media print {
+  button, input, select, #loginPage, #resetLink {
+    display: none !important;
+  }
+
+  table {
+    page-break-inside: avoid;
+  }
+}
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.pagination-controls select,
+.pagination-controls button {
+  padding: 5px 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.pagination-controls button {
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.pagination-controls button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

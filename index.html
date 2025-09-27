@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Webertech Sales Portal</title>
+  <link rel="stylesheet" href="style.css"/>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+  <!-- Excel Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="header">
+    <img src="https://i.ibb.co/SXbQMjqc/IMG-20250614-WA0016.jpg" alt="Logo" class="logo" />
+    <h1>WEBERTECH SALES PORTAL</h1>
+  </div>
+
+  <!-- Login -->
+  <div id="loginPage">
+    <h3>Login</h3>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <a href="#" id="resetLink">Forgot password?</a>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" style="display:none;">
+    <h2 id="greeting"></h2>
+    <p id="userRole"></p>
+    <p id="userEmail"></p>
+    <button onclick="logout()">Logout</button>
+
+    <hr />
+
+    <!-- Admin Only Stock Section -->
+    <div id="adminSection" style="display:none">
+      <h3>🧾 Stock Management</h3>
+      <input id="stockItem" placeholder="Item name" />
+      <input id="stockQty" type="number" placeholder="Quantity" />
+      <input id="stockPrice" type="number" placeholder="Price Each (KES)" />
+      <input id="stockBuyPrice" type="number" placeholder="Buying Price Each (KES)" />
+      <select id="stockCategory">
+        <option value="">Select Category</option>
+        <option value="Cyber Services">Cyber Services</option>
+        <option value="Stationery">Stationery</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Repairs">Repairs</option>
+        <option value="Gas Accessories">Gas Accessories</option>
+        <option value="Gas Refill">Gas Refill</option>
+        <option value="Gas Full Sale">Gas Full Sale</option>
+      </select>
+      <button onclick="addStock()">Add Stock</button>
+      <table id="stockTable">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Price (Sell)</th>
+            <th>Buy Price (KES)</th>
+            <th>Total Buying Price</th>
+            <th>Category</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button onclick="exportTableToExcel('stockTable', 'Stock_Report')">📥 Export Stock</button>
+    </div>
+
+    <!-- STOCK PAGINATION CONTROLS -->
+    <div class="pagination-controls">
+      <button id="stockPrev">Previous</button>
+      <label>Rows per page:</label>
+      <select id="stockRowsPerPage">
+        <option value="5" selected>5</option>
+        <option value="50">50</option>
+        <option value="250">250</option>
+      </select>
+
+      <label>Page:</label>
+      <select id="stockPageSelect"></select>
+      <button id="stockNext">Next</button>
+    </div>
+
+    <hr />
+
+    <!-- Sales Section -->
+    <h3>💵 Record Sale</h3>
+    <input id="saleItem" list="stockSuggestions" placeholder="Item" />
+    <datalist id="stockSuggestions"></datalist>
+    <input id="saleQty" type="number" placeholder="Quantity" />
+    <input id="salePrice" type="number" placeholder="Price Each (KES)" />
+    <input id="saleBuyingPrice" type="number" placeholder="Buying Price (auto)" readonly />
+    <input id="saleDiscount" type="number" placeholder="Discount (optional, ≤50 KES)" />
+    <select id="saleCategory">
+      <option value="">Select Category</option>
+      <option value="Cyber Services">Cyber Services</option>
+      <option value="Stationery">Stationery</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Repairs">Repairs</option>
+      <option value="Gas Accessories">Gas Accessories</option>
+      <option value="Gas Refill">Gas Refill</option>
+      <option value="Gas Full Sale">Gas Full Sale</option>
+    </select>
+    <select id="paymentMethod">
+      <option value="Cash">Cash</option>
+      <option value="M-PESA Till">M-PESA Till</option>
+      <option value="M-PESA Send Money">M-PESA Send Money</option>
+      <option value="Bank">Bank</option>
+    </select>
+    <button onclick="recordSale()">Record Sale</button>
+
+    <h3>📊 Sales Table</h3>
+    <input type="date" id="startDate" /> to
+    <input type="date" id="endDate" />
+
+    <select id="filterCategory">
+      <option value="">All Categories</option>
+      <option value="Cyber Services">Cyber Services</option>
+      <option value="Stationery">Stationery</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Repairs">Repairs</option>
+      <option value="Gas Accessories">Gas Accessories</option>
+      <option value="Gas Refill">Gas Refill</option>
+      <option value="Gas Full Sale">Gas Full Sale</option>
+    </select>
+
+    <select id="filterEmployee">
+      <option value="">All Employees</option>
+    </select>
+
+    <button onclick="filterSales()">Filter</button>
+
+    <table id="salesTable">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Employee</th>
+          <th>Item</th>
+          <th>Category</th>
+          <th>Qty</th>
+          <th>Price Each</th>
+          <th>Buying Price</th>
+          <th>Discount</th>
+          <th>Profit</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <button onclick="exportTableToExcel('salesTable', 'Sales_Report')">📥 Export Sales</button>
+
+    <!-- SALES PAGINATION CONTROLS -->
+    <div class="pagination-controls">
+      <button id="salesPrev">Previous</button>
+      <label>Rows per page:</label>
+      <select id="salesRowsPerPage">
+        <option value="5" selected>5</option>
+        <option value="50">50</option>
+        <option value="250">250</option>
+      </select>
+
+      <label>Page:</label>
+      <select id="salesPageSelect"></select>
+      <button id="salesNext">Next</button>
+    </div>
+
+    <h3>💰 Summary</h3>
+    <p>Total Sales Today: <span id="totalSalesAmount">KES 0</span></p>
+    <p>Wage: <span id="dailyWage">KES 0</span></p>
+
+    <h3>📋 Sales Summary by User</h3>
+    <table id="userReportTable">
+      <thead><tr><th>User</th><th>Total Sales</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="categorySummary">
+      <h3>📦 Sales Summary by Category</h3>
+      <table id="categoryReportTable">
+        <thead><tr><th>Category</th><th>Total Sales</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <hr />
+
+    <h3>💸 Expenses</h3>
+    <input id="expenseDate" type="date" />
+    <select id="expenseType">
+      <option value="">Select Type</option>
+      <option value="Rent">Rent</option>
+      <option value="Utilities">Utilities</option>
+      <option value="Wages">Wages</option>
+      <option value="Supplies">Supplies</option>
+      <option value="Other">Other</option>
+    </select>
+    <input id="expenseDesc" placeholder="Description" />
+    <input id="expenseAmount" type="number" placeholder="Amount (KES)" />
+    <button onclick="addExpense()">Add Expense</button>
+
+    <table id="expensesTable">
+      <thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Amount</th><th>Actions</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <hr />
+
+    <h3>📈 PROFIT ANALYSIS</h3>
+    <p>Total Profit from Sold Items: <span id="totalProfitFromSales">KES 0</span></p>
+    <p>Total Expenses: <span id="totalExpensesAmount">KES 0</span></p>
+    <p><strong>NET PROFIT = Total profit from sold items - Expenses</strong>: <span id="netProfit">KES 0</span></p>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
